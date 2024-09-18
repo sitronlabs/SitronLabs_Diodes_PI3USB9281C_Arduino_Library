@@ -1,0 +1,16 @@
+{
+    "name": "Sitron_Labs_PI3USB9281C_Arduino_Library",
+    "version": "0.1.0",
+    "description": "Arduino library for the Diodes Incorporated (previously Pericom) PI3USB9281C USB device detection IC.",
+    "keywords": "sitron labs,sitron,labs,arduino,library,i2c,interface,usb,device,charger,detection,pericom,diodes,diodes incorporated,pi3usb9281,pi3usb9281a,pi3usb9281c",
+    "repository": {
+        "type": "git",
+        "url": "https:\/\/github.com\/sitronlabs\/SitronLabs_Diodes_PI3USB9281C_Arduino_Library.git"
+    },
+    "frameworks": "arduino",
+    "platforms": "*",
+    "dependencies": [],
+    "build": {
+        "includeDir": "src"
+    }
+}

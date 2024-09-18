@@ -1,0 +1,9 @@
+pi3usb9281c	KEYWORD1
+setup	KEYWORD2
+detect	KEYWORD2
+reset	KEYWORD2
+device_attach_wait	KEYWORD2
+device_type_get	KEYWORD2
+switch_state_set	KEYWORD2
+register_read	KEYWORD2
+register_write	KEYWORD2
