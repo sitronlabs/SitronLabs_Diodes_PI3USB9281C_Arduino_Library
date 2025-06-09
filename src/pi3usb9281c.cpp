@@ -7,10 +7,15 @@
 #endif
 
 /**
+ * @brief Initializes the PI3USB9281C device
  *
- * @param[in] i2c_library
- * @param[in] i2c_address
- * @param[in] pin_enb
+ * This function sets up the I2C communication with the device and configures the enable pin.
+ * The device only supports I2C address 0x25.
+ *
+ * @param[in] i2c_library Reference to the TwoWire I2C library instance to use
+ * @param[in] i2c_address I2C address of the device (must be 0x25)
+ * @param[in] pin_enb GPIO pin number connected to the device's enable pin
+ * @return 0 on success, -EINVAL if invalid I2C address
  */
 int pi3usb9281c::setup(TwoWire& i2c_library, const uint8_t i2c_address, const int pin_enb) {
 
@@ -32,7 +37,11 @@ int pi3usb9281c::setup(TwoWire& i2c_library, const uint8_t i2c_address, const in
 }
 
 /**
+ * @brief Detects if a PI3USB9281C device is present
  *
+ * Reads the device ID register and verifies it matches the expected value (0x18).
+ *
+ * @return true if device is detected, false otherwise
  */
 bool pi3usb9281c::detect(void) {
     uint8_t reg_id;
@@ -44,7 +53,11 @@ bool pi3usb9281c::detect(void) {
 }
 
 /**
+ * @brief Performs a software reset of the device
  *
+ * Writes to the reset register to trigger a device reset.
+ *
+ * @return 0 on success, -EIO on I2C communication error
  */
 int pi3usb9281c::reset(void) {
 
@@ -59,8 +72,13 @@ int pi3usb9281c::reset(void) {
 }
 
 /**
- * @param[in] timeout_ms
- * @return
+ * @brief Waits for a device attachment event
+ *
+ * Polls the interrupt register for the device attachment flag.
+ * When detected, clears the interrupt flag.
+ *
+ * @param[in] timeout_ms Maximum time to wait in milliseconds
+ * @return 0 on device attached, -ETIMEDOUT on timeout, -EIO on I2C error
  */
 int pi3usb9281c::device_attach_wait(const uint32_t timeout_ms) {
 
@@ -94,7 +112,13 @@ int pi3usb9281c::device_attach_wait(const uint32_t timeout_ms) {
 }
 
 /**
+ * @brief Gets the type of attached USB device or charger
  *
+ * Reads the device type and charger status registers to determine what kind of
+ * device is attached. Can detect various USB ports (SDP, CDP, DCP) and charger types.
+ *
+ * @param[out] type Pointer to store the detected device type
+ * @return 0 on success, -EIO on I2C communication error
  */
 int pi3usb9281c::device_type_get(enum pi3usb9281c_device_type* const type) {
 
@@ -133,7 +157,14 @@ int pi3usb9281c::device_type_get(enum pi3usb9281c_device_type* const type) {
 }
 
 /**
+ * @brief Controls the state of the D+/D- switch
  *
+ * Sets the switch to either automatic control, manually open, or manually closed.
+ * In automatic mode, the device controls the switch based on detected device type.
+ * Manual modes allow forcing the switch state regardless of device type.
+ *
+ * @param[in] state Desired switch state (auto, manual open, or manual closed)
+ * @return 0 on success, -EINVAL for invalid state, -EIO on I2C error
  */
 int pi3usb9281c::switch_state_set(const enum pi3usb9281c_switch_state state) {
 
@@ -157,10 +188,13 @@ int pi3usb9281c::switch_state_set(const enum pi3usb9281c_switch_state state) {
 }
 
 /**
- * Reads the contents of the given register.
- * @param[in] reg_address The address of the register.
- * @param[out] reg_content A pointer to a variable that will be updated with the contents of the register.
- * @return 0 in case of success, or a negative error code otherwise.
+ * @brief Reads a device register
+ *
+ * Performs an I2C read transaction to get the contents of the specified register.
+ *
+ * @param[in] reg_address Register address to read
+ * @param[out] reg_content Pointer to store the register value
+ * @return 0 on success, -EINVAL if not initialized, -EIO on I2C error
  */
 int pi3usb9281c::register_read(const enum pi3usb9281c_register reg_address, uint8_t* const reg_content) {
     int res;
@@ -179,7 +213,7 @@ int pi3usb9281c::register_read(const enum pi3usb9281c_register reg_address, uint
     }
 
     /* Read data */
-    m_i2c_library->requestFrom(m_i2c_address, (uint8_t)1, (uint8_t) true);
+    m_i2c_library->requestFrom(m_i2c_address, (uint8_t)1, (uint8_t)true);
     res = m_i2c_library->available();
     if (res == 0) {
         return -EIO;
@@ -191,10 +225,13 @@ int pi3usb9281c::register_read(const enum pi3usb9281c_register reg_address, uint
 }
 
 /**
- * Updates the content of the given register.
- * @param[in] reg_address The address of the register.
- * @param[in] reg_content The new content of the register.
- * @return 0 in case of success, or a negative error code otherwise.
+ * @brief Writes to a device register
+ *
+ * Performs an I2C write transaction to update the specified register.
+ *
+ * @param[in] reg_address Register address to write
+ * @param[in] reg_content Value to write to the register
+ * @return 0 on success, -EINVAL if not initialized, -EIO on I2C error
  */
 int pi3usb9281c::register_write(const enum pi3usb9281c_register reg_address, const uint8_t reg_content) {
     int res;
