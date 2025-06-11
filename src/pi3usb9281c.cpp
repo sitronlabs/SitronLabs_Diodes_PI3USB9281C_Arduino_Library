@@ -112,6 +112,39 @@ int pi3usb9281c::device_attach_wait(const uint32_t timeout_ms) {
 }
 
 /**
+ * @brief Checks for device attachment (non-blocking)
+ *
+ * Reads the interrupt register once to check for device attachment.
+ * If a device is attached, clears the interrupt flag.
+ *
+ * @return 1 if device attached, 0 if no device attached, -EIO on I2C error
+ */
+int pi3usb9281c::device_attach_get(void) {
+	
+    /* Read interrupt flags */
+    uint8_t reg_interrupt = 0;
+    if (register_read(PI3USB9281C_REGISTER_INTERRUPT, &reg_interrupt) < 0) {
+        return -EIO;
+    }
+
+    /* Check accessory attached interrupt flag */
+    if (reg_interrupt & 0b1) {
+		
+        /* Clear interrupt flag */
+        reg_interrupt = 0b1;
+        if (register_write(PI3USB9281C_REGISTER_INTERRUPT, reg_interrupt) < 0) {
+            return -EIO;
+        }
+
+        /* Return device attached */
+        return 1;
+    }
+
+    /* Return no device attached */
+    return 0;
+}
+
+/**
  * @brief Gets the type of attached USB device or charger
  *
  * Reads the device type and charger status registers to determine what kind of

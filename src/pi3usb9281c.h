@@ -85,6 +85,7 @@ class pi3usb9281c {
     //!@{
     //! Device detection and monitoring
     int device_attach_wait(const uint32_t timeout_ms);
+    int device_attach_get(void);
     int device_type_get(enum pi3usb9281c_device_type *const type);
     //!@}
 
